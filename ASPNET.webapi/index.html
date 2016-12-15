@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>C# WebAPI Sample with Forge BUckets</title>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Common packages: jQuery, Bootstrap, jsTree -->
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="Scripts/jquery-3.1.1.min.js"></script>
+    <script src="Scripts/bootstrap-select.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script src="Scripts/jsTree3/jstree.min.js"></script>
+    <link href="Content/jsTree/themes/default/style.min.css" rel="stylesheet" />
+    <link href="Content/bootstrap-select.min.css" rel="stylesheet" />
+    <!-- Autodesk Forge Viewer files -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/viewingservice/v1/viewers/style.min.css" type="text/css">
+    <script language="JavaScript" src="https://developer.api.autodesk.com/viewingservice/v1/viewers/three.min.js"></script>
+    <script language="JavaScript" src="https://developer.api.autodesk.com/viewingservice/v1/viewers/viewer3D.min.js"></script>
+    <!-- this project files -->
+    <link href="Content/main.css" rel="stylesheet" />
+    <script src="Scripts/ForgeTree.js"></script>
+    <script src="Scripts/ForgeViewer.js"></script>
+</head>
+<body>
+    <!-- Fixed navbar by Bootstrap: https://getbootstrap.com/examples/navbar-fixed-top/ -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav left">
+                <li>
+                    <a href="http://developer.autodesk.com" target="_blank">
+                        <img alt="Autodesk Forge" src="/Images/autodesk-forge.png" height="20">
+                        Autodesk Forge
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- End of navbar -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading" data-toggle="tooltip">
+                        Buckets &amp; Objects
+                        <img src="/Images/refresh.png" id="refreshBuckets" style="vertical-align: top; cursor: pointer" title="Refresh Buckets &amp; Objects" height="20" />
+                        <button class="btn btn-xs btn-info" style="float: right" id="showFormCreateBucket" data-toggle="modal" data-target="#createBucketModal"><span class="glyphicon glyphicon-folder-close"></span> New bucket</button>
+                    </div>
+                    <div id="appBuckets" class="foldertree">
+                        tree here
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div id="forgeViewer" class="forgeViewer"></div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div style="float:right;"><img src="/Images/github-logo.png" height="20" /> <a href="https://github.com/Developer-Autodesk/">Source code</a></div>
+    </footer>
+    <form id="uploadFile" method='post' enctype="multipart/form-data">
+        <input id="hiddenUploadField" type="file" name="theFile" style="visibility:hidden" />
+    </form>
+    <!-- Modal -->
+    <div class="modal fade" id="createBucketModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cancel"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Create new bucket</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <select class="selectpicker" multiple title="Policy Key" id="newBucketPolicyKey">
+                            <option value="transient" selected>Transient</option>
+                            <option value="temporary" disabled>Temporary</option> <!-- you can safely enable this  -->
+                            <option value="persistent" disabled>Persistent</option><!-- you can safely enable this  -->
+                        </select>
+                        <input type="text" id="newBucketKey" class="form-control">
+                    </div><!-- /input-group -->
+                    For demonstration purpouses, objects (files) are not automatically translated. After you upload, right click on the object and select "Translate".
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createNewBucket">Go ahead, create the bucket</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
