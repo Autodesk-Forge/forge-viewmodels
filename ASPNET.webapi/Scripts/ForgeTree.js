@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Partner Development
 //
@@ -88,7 +88,7 @@ function autodeskCustomMenu(autodeskNode) {
     switch (autodeskNode.type){
         case "bucket":
             items = {
-                sendToBox: {
+                uploadFile: {
                     label: "Upload file",
                     icon: "/Images/upload.png",
                     action: function () {
@@ -100,7 +100,7 @@ function autodeskCustomMenu(autodeskNode) {
             break;
         case "object":
             items = {
-                sendToBox: {
+                translateFile: {
                     label: "Translate",
                     icon: "/Images/icon-model-derive.svg",
                     action: function () {

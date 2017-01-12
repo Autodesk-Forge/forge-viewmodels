@@ -1,4 +1,4 @@
-﻿/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 // Copyright (c) Autodesk, Inc. All rights reserved
 // Written by Forge Partner Development
 //
@@ -30,9 +30,6 @@ namespace Autodesk.Forge.OAuth
     DataWrite,
     BucketRead,
     BucketCreate
-
-    //public static string DataRead { get { return "data:read"; } }
-    //public static string BucketRead { get { return "bucket:read"; } }
   }
 
   public abstract class OAuth
