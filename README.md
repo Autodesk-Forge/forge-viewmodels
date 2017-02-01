@@ -43,7 +43,11 @@ Compile the solution, Visual Studio should download the NUGET packages ([Autodes
 
 Start the **ASPNET.webapi** project, the **index.html** is marked as start page. At the webpage, the **New Bucket** blue button allow create new buckets (as of now, minimum input validation is implemented). For any bucket, right-click to upload a file (objects). For demonstration, objects are not automatically translated, but right-click on a object and select **Translate**. 
 
-# Know issues
+# Deployment
+
+For Appharbor deployment, following [this steps to configure your Forge Client ID & Secret](http://adndevblog.typepad.com/cloud_and_mobile/2017/01/deploying-forge-aspnet-samples-to-appharbor.html).
+
+# Known issues
 
 The **ASPNET.webapi** project is adding reference to Newtonsoft.Json library due a dependency from another library (jsTree), but this is not required and cause a conflict of versions. If it happens, you can safely remove this reference (from ASPNET.webapi project).
 
