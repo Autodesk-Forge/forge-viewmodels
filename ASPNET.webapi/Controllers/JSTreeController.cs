@@ -17,11 +17,12 @@
 /////////////////////////////////////////////////////////////////////
 
 using Autodesk.Forge;
-using Autodesk.Forge.OAuth;
-using Autodesk.Forge.OSS;
+using Autodesk.Forge.Model;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using WebAPISample.Utility;
 
 namespace WebAPISample.Controllers
 {
@@ -48,23 +49,29 @@ namespace WebAPISample.Controllers
     public async Task<IList<TreeNode>> GetTreeDataAsync([FromUri]string id)
     {
       IList<TreeNode> nodes = new List<TreeNode>();
+      dynamic oauth = await Utility.OAuth.Get2LeggedTokenAsync(new Scope[] { Scope.BucketRead, Scope.DataRead });
 
-      OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync(Config.FORGE_CLIENT_ID, Config.FORGE_CLIENT_SECRET, new Scope[] { Scope.BucketRead, Scope.DataRead });
       if (id == "#") // root
       {
         // in this case, let's return all buckets
-        AppBuckets appBuckets = new AppBuckets(oauth);
-        IEnumerable<Bucket> buckets = await appBuckets.GetBucketsAsync(int.MaxValue);
-        foreach (Bucket b in buckets)
-          nodes.Add(new TreeNode(b.BucketKey, b.BucketKey, "bucket", true));
+        BucketsApi appBckets = new BucketsApi();
+        appBckets.Configuration.AccessToken = oauth.access_token;
+        dynamic buckets = await appBckets.GetBucketsAsync(Enum.GetName(typeof(Utility.Buckets.Region), Utility.Buckets.Region.US));
+        foreach (KeyValuePair<string, dynamic> bucket in new DynamicDictionaryItems(buckets.items))
+        {
+          nodes.Add(new TreeNode(bucket.Value.bucketKey, bucket.Value.bucketKey, "bucket", true));
+        }
       }
       else
       {
-        // as we have the id (bucketKey), let's return all objects
-        Bucket bucket = new Bucket(oauth,  id/*bucketKey*/);
-        IEnumerable<Autodesk.Forge.OSS.Object> objects = await bucket.GetObjectsAsync(int.MaxValue);
-        foreach (Autodesk.Forge.OSS.Object obj in objects)
-          nodes.Add(new TreeNode(obj.ObjectId.Base64Encode(), obj.ObjectKey, "object", false));
+        // as we have the id (bucketKey), let's return all 
+        ObjectsApi objects = new ObjectsApi();
+        objects.Configuration.AccessToken = oauth.access_token;
+        var objectsList = objects.GetObjects(id);
+        foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
+        {
+          nodes.Add(new TreeNode(((string)objInfo.Value.objectId).Base64Encode(), objInfo.Value.objectKey, "object", false));
+        }
       }
       return nodes;
     }

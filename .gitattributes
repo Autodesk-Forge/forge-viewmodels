@@ -1,2 +1,1 @@
-$ cat .gitattributes
-ASPNET.webapi/* linguist-vendored
+ASPNET.webapi/Scripts/* linguist-vendored

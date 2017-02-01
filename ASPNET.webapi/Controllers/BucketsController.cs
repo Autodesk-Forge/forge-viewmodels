@@ -16,45 +16,43 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Autodesk.Forge.OSS;
-using Autodesk.Forge.OAuth;
+using Autodesk.Forge;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Web;
 using System.IO;
+using Autodesk.Forge.Model;
+using System;
+using static WebAPISample.Utility.Buckets;
+using static WebAPISample.Utility.OAuth;
 
 namespace WebAPISample.Controllers
 {
   public class BucketsController : ApiController
   {
-    private async Task<OAuth> GetOAuth(Scope[] scope)
-    {
-      OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync(
-        Config.FORGE_CLIENT_ID, Config.FORGE_CLIENT_SECRET,
-        (scope == null ? Config.FORGE_SCOPE_PUBLIC : scope));
-      return oauth;
-    }
-
     /// <summary>
     /// Data model for CreateBucket end point
     /// </summary>
     public class CreateBucketModel
     {
       public string bucketKey { get; set; }
-      public PolicyKey policyKey { get; set; }
+      public PostBucketsPayload.PolicyKeyEnum policyKey { get; set; }
       public Region region { get; set; }
     }
 
     [HttpPost]
     [Route("api/forge/buckets/createBucket")]
-    public async Task<BucketDetails> CreateBucket([FromBody]CreateBucketModel bucket)
+    public async Task<dynamic> CreateBucket([FromBody]CreateBucketModel bucket)
     {
-      if (!Bucket.IsValidBucketKey(bucket.bucketKey)) return null;
+      if (!Utility.Buckets.IsValidBucketKey(bucket.bucketKey)) return null;
 
-      AppBuckets buckets = new AppBuckets(await GetOAuth(new Scope[] { Scope.BucketCreate }));
-      return await buckets.CreateBucketAsync(bucket.bucketKey, bucket.policyKey, bucket.region);
+      BucketsApi buckets = new BucketsApi();
+      dynamic token = await Utility.OAuth.Get2LeggedTokenAsync(new Scope[] { Scope.BucketCreate });
+      buckets.Configuration.AccessToken = token.access_token;
+      PostBucketsPayload bucketPayload = new PostBucketsPayload(bucket.bucketKey, null, bucket.policyKey);
+      return await buckets.CreateBucketAsync(bucketPayload, Enum.GetName(typeof(Region), bucket.region));
     }
 
     public class UploadObjectModel
@@ -66,7 +64,7 @@ namespace WebAPISample.Controllers
     [HttpPost]
     [Route("api/forge/buckets/uploadObject")]
     public async Task<Object> UploadObject()//[FromBody]UploadObjectModel obj)
-    { 
+    {
       // basic input validation
       HttpRequest req = HttpContext.Current.Request;
       if (string.IsNullOrWhiteSpace(req.Params["bucketKey"]))
@@ -83,47 +81,23 @@ namespace WebAPISample.Controllers
       file.SaveAs(fileSavePath);
 
       // get the bucket...
-      Bucket bucket = new Bucket(await GetOAuth(new Scope[] { Scope.DataCreate, Scope.DataWrite }), bucketKey);
+      dynamic oauth = await Get2LeggedTokenAsync(new Scope[] { Scope.DataCreate, Scope.DataWrite });
+      ObjectsApi objects = new ObjectsApi();
+      objects.Configuration.AccessToken = oauth.access_token;
+
       // upload the file/object, which will create a new object
-      Object newObj = await bucket.UploadObjectAsync(fileSavePath);
+      dynamic uploadedObj;
+      using (StreamReader streamReader = new StreamReader(fileSavePath))
+      {
+        uploadedObj = await objects.UploadObjectAsync(bucketKey,
+               file.FileName, (int)streamReader.BaseStream.Length, streamReader.BaseStream,
+               "application/octet-stream");
+      }
 
       // cleanup
       File.Delete(fileSavePath);
 
-      return newObj;
+      return uploadedObj;
     }
-
-
-    #region Demonstration endpoints, not used on this sample
-
-    [HttpGet]
-    [Route("api/forge/buckets")]
-    public async Task<IEnumerable<Bucket>> GetBuckets([FromUri]int limit = 100, [FromUri]Region region = Region.US, [FromUri]string startAt = "")
-    {
-      OAuth oauth = await GetOAuth(new Scope[] { Scope.BucketRead });
-      AppBuckets buckets = new AppBuckets(oauth);
-      return await buckets.GetBucketsAsync(limit, region, startAt);
-    }
-
-    [HttpGet]
-    [Route("api/forge/buckets/{bucketKey}/details")]
-    public async Task<BucketDetails> GetBucket(string bucketKey)
-    {
-      OAuth oauth = await GetOAuth(new Scope[] { Scope.BucketRead });
-      BucketDetails bucket = await BucketDetails.InitializeAsync(oauth, bucketKey);
-      return bucket;
-    }
-
-    [HttpGet]
-    [Route("api/forge/buckets/{bucketKey}/objects")]
-    public async Task<IEnumerable<Autodesk.Forge.OSS.Object>> GetObjects(string bucketKey, [FromUri]int limit = 100, [FromUri]string startAt = "")
-    {
-      OAuth oauth = await GetOAuth(new Scope[] { Scope.DataRead });
-      Bucket bucket = new Bucket(oauth, bucketKey);
-      return await bucket.GetObjectsAsync(limit, startAt);
-    }
-
-    #endregion
-
   }
 }

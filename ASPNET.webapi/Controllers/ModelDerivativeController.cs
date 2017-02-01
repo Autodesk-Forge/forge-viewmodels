@@ -17,11 +17,12 @@
 /////////////////////////////////////////////////////////////////////
 
 using Autodesk.Forge;
-using Autodesk.Forge.ModelDerivative;
-using Autodesk.Forge.OAuth;
+using Autodesk.Forge.Model;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
+using static WebAPISample.Utility.OAuth;
 
 namespace WebAPISample.Controllers
 {
@@ -31,25 +32,37 @@ namespace WebAPISample.Controllers
     {
       public string bucketKey { get; set; }
       public string objectKey { get; set; }
+      public string rootFilename { get; set; }
     }
 
-    private async Task<OAuth> GetOAuth(Scope[] scope)
-    {
-      OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync(
-        Config.FORGE_CLIENT_ID, Config.FORGE_CLIENT_SECRET,
-        (scope == null ? Config.FORGE_SCOPE_PUBLIC : scope));
-      return oauth;
-    }
 
     [HttpPost]
     [Route("api/forge/modelderivative/translateObject")]
-    public async Task<HttpStatusCode> TranslateObject([FromBody]TranslateObjectModel objModel)
+    public async Task<dynamic> TranslateObject([FromBody]TranslateObjectModel objModel)
     {
-      Autodesk.Forge.OSS.Object obj = new Autodesk.Forge.OSS.Object(
-        await GetOAuth(new Scope[] { Scope.DataRead, Scope.DataWrite, Scope.DataCreate }),
-        objModel.bucketKey, objModel.objectKey.Base64Decode());
+      dynamic oauth = await Utility.OAuth.Get2LeggedTokenAsync(new Scope[] { Scope.DataRead, Scope.DataWrite, Scope.DataCreate });
 
-      return await obj.Translate(new SVFOutput[] { SVFOutput.Views2d, SVFOutput.Views3d });
+      List<JobPayloadItem> outputs = new List<JobPayloadItem>()
+      {
+       new JobPayloadItem(
+         JobPayloadItem.TypeEnum.Svf,
+         new List<JobPayloadItem.ViewsEnum>()
+         {
+           JobPayloadItem.ViewsEnum._2d,
+           JobPayloadItem.ViewsEnum._3d
+         })
+      };
+      JobPayload job;
+      if (string.IsNullOrEmpty( objModel.rootFilename))
+         job = new JobPayload(new JobPayloadInput(objModel.objectKey), new JobPayloadOutput(outputs));
+      else
+        job = new JobPayload(new JobPayloadInput(objModel.objectKey, true, objModel.rootFilename), new JobPayloadOutput(outputs));
+
+
+      DerivativesApi derivative = new DerivativesApi();
+      derivative.Configuration.AccessToken = oauth.access_token;
+      dynamic jobPosted = await derivative.TranslateAsync(job);
+      return jobPosted;
     }
   }
 }

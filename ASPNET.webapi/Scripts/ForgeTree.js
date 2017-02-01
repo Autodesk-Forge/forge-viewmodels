@@ -161,11 +161,26 @@ function uploadFile(node) {
 function translateObject(node) {
     var bucketKey = node.parents[0];
     var objectKey = node.id;
-    jQuery.post({
-        url: '/api/forge/modelderivative/translateObject',
-        data: { 'bucketKey': bucketKey, 'objectKey': objectKey },
-        success: function (res) {
-            //$('#appBuckets').jstree(true).refresh();
-        },
-    });
+    if (node.text.indexOf('.zip') > 0) {
+        $("#rootFileModal").modal();
+        $("#translateZipObject").click(function () {
+            $('#rootFileModal').modal('toggle');
+            jQuery.post({
+                url: '/api/forge/modelderivative/translateObject',
+                data: { 'bucketKey': bucketKey, 'objectKey': objectKey , 'rootFilename': $("#rootFilename").val()},
+                success: function (res) {
+                    //$('#appBuckets').jstree(true).refresh();
+                },
+            });
+        });
+    }
+    else {
+        jQuery.post({
+            url: '/api/forge/modelderivative/translateObject',
+            data: { 'bucketKey': bucketKey, 'objectKey': objectKey },
+            success: function (res) {
+                //$('#appBuckets').jstree(true).refresh();
+            },
+        });
+    }
 }

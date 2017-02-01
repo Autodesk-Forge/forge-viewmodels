@@ -16,7 +16,7 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Autodesk.Forge.OAuth;
+using Autodesk.Forge;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -28,13 +28,10 @@ namespace WebAPISample.Controllers
     [Route("api/forge/oauth/token")]
     public async Task<string> Get()
     {
-      OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync(
-        Config.FORGE_CLIENT_ID, Config.FORGE_CLIENT_SECRET,
-        // only expose data:read access tokens as endpoints
-        // this is required for Viewer
-        new Scope[] { Scope.DataRead });
-
-      return oauth.AccessToken;
+      // only expose data:read access tokens as endpoints
+      // this is required for Viewer
+      dynamic oauth = await Utility.OAuth.Get2LeggedTokenAsync(new Scope[] { Scope.DataRead });
+      return oauth.access_token;
     }
   }
 }

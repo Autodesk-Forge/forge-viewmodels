@@ -19,7 +19,7 @@
     <!-- this project files -->
     <link href="Content/main.css" rel="stylesheet" />
     <script src="Scripts/ForgeTree.js"></script>
-    <script src="Scripts/ForgeViewer.js"></script>
+    <script src="Scripts/ForgeViewerBasic.js"></script>
 </head>
 <body>
     <!-- Fixed navbar by Bootstrap: https://getbootstrap.com/examples/navbar-fixed-top/ -->
@@ -61,7 +61,7 @@
     <form id="uploadFile" method='post' enctype="multipart/form-data">
         <input id="hiddenUploadField" type="file" name="theFile" style="visibility:hidden" />
     </form>
-    <!-- Modal -->
+    <!-- Modal Create Bucket -->
     <div class="modal fade" id="createBucketModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -83,6 +83,24 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary" id="createNewBucket">Go ahead, create the bucket</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal ZIP Root file -->
+    <div class="modal fade" id="rootFileModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cancel"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Compressed file: root file required</h4>
+                </div>
+                <div class="modal-body">
+                 Please specify the root file name to start translating: <input type="text" id="rootFilename" class="form-control">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="translateZipObject">Start translation</button>
                 </div>
             </div>
         </div>

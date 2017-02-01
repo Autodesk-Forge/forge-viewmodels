@@ -16,8 +16,9 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-using Autodesk.Forge.OAuth;
+using Autodesk.Forge;
 using System.Web.Configuration;
+using static WebAPISample.Utility.OAuth;
 
 namespace WebAPISample
 {

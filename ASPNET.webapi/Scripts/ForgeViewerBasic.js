@@ -35,6 +35,8 @@ function launchViewer(urn) {
     });
 }
 
+var viewer;
+
 function onDocumentLoadSuccess(doc) {
 
     // We could still make use of Document.getSubItemsWithProperties()

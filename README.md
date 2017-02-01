@@ -16,13 +16,9 @@ This basic C# WebAPI back-end sample implements a basic list of Buckets and Obje
 
 ![](indexpage.png)
 
- The Visual Studio solution includes 3 projects: 
+ The Visual Studio solution includes 1 project: 
 
 **1. ASPNET.Webapi**: WebAPI backend that expose specific endpoints to the fron-end (pude HTML + JavaScript) via Controllers.
-
-**2. Autodesk.Forge**: Class Library (.DLL) that wraps some of OAuth, OSS and Model Derivative endpoints in a meanifull way.
-
-**3. Autodesk.Forge.Test**: Some testing methods.
 
 ### Live demo
 
@@ -34,7 +30,7 @@ For using this sample, you need an Autodesk developer credentials. Visit the [Fo
 
 ## Run Locally
 
-Open the **web.config** file and adjust the Forge Client ID & Secret.
+Open the **web.config** file and adjust the Forge Client ID & Secret. If you plan to deploy to Appharbor, configure the variables (no need to change this web.config file).
 
 ```xml
 <appSettings>
@@ -43,59 +39,9 @@ Open the **web.config** file and adjust the Forge Client ID & Secret.
 </appSettings>
 ```
 
-Compile the solution, Visual Studio should download the NUGET packages ([RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/))
+Compile the solution, Visual Studio should download the NUGET packages ([Autodesk Forge](https://www.nuget.org/packages/Autodesk.Forge/), [RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/))
 
 Start the **ASPNET.webapi** project, the **index.html** is marked as start page. At the webpage, the **New Bucket** blue button allow create new buckets (as of now, minimum input validation is implemented). For any bucket, right-click to upload a file (objects). For demonstration, objects are not automatically translated, but right-click on a object and select **Translate**. 
-
-## Run Test
-
-Open the **ForgeApp.runsettings** file and adjust the Forge client ID and secret.
-
-```xml
-<RunSettings>
-  <TestRunParameters>
-    <Parameter name="FORGE_CLIENT_ID" value="" />
-    <Parameter name="FORGE_CLIENT_SECRET" value="" />
-  </TestRunParameters>
-</RunSettings>
-```
-
-The **BucketWorkflow** test will create a bucket (named "test[timestamp]"), upload the testing file (/TestFile/Analyze.dwf) and post a translation job.
-
-# Library usage
-
-This solution includes a **Autodesk.Forge** class library that maps endpoints related to app buckets. 
-
-```cs
-// authenticate
-OAuth.OAuth oauth = await OAuth2LeggedToken.AuthenticateAsync("Your client ID", "Your client secret",
-new Scope[] { Scope.BucketRead, Scope.BucketCreate, Scope.DataRead, Scope.DataCreate, Scope.DataWrite });
-
-// create bucket and get list of buckets in different conditions
-AppBuckets app = new AppBuckets(oauth);
-IEnumerable<Bucket> buckets = await buckets.GetBucketsAsync(10);
-
-// create a random bucket
-string bucketKey = string.Format("test{0}", DateTime.Now.ToString("yyyyMMddHHmmss"));
-Bucket bucket = await app.CreateBucketAsync(bucketKey, PolicyKey.Transient);
-
-// upload new object
-OSS.Object newObject = await bucket.UploadObjectAsync(testFile);
-// this URN can be used on the viewer
-// but need to translate first...
-string newObjectURN = newObject.ObjectId.Base64Encode();
-
-// the list after should have 1 object...
-IEnumerable<OSS.Object> objectsAfter = await bucket.GetObjectsAsync(int.MaxValue);
-foreach (OSS.Object obj in objectsAfter)
-{
-    string urn = obj.ObjectId;
-}
-
-// translate
-HttpStatusCode res = await newObject.Translate(new SVFOutput[] { SVFOutput.Views3d, SVFOutput.Views2d });
-// now this newObject is ready for Viewer
-```
 
 # Know issues
 
