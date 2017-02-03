@@ -18,7 +18,6 @@
 
 using Autodesk.Forge;
 using System.Web.Configuration;
-using static WebAPISample.Utility.OAuth;
 
 namespace WebAPISample
 {

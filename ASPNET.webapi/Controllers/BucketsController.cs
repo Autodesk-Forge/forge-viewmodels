@@ -17,14 +17,12 @@
 /////////////////////////////////////////////////////////////////////
 
 using Autodesk.Forge;
-using System.Collections.Generic;
-using System.Web.Http;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Web;
-using System.IO;
 using Autodesk.Forge.Model;
 using System;
+using System.IO;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http;
 using static WebAPISample.Utility.Buckets;
 using static WebAPISample.Utility.OAuth;
 

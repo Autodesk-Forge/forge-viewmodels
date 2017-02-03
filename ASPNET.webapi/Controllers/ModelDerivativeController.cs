@@ -19,10 +19,8 @@
 using Autodesk.Forge;
 using Autodesk.Forge.Model;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using static WebAPISample.Utility.OAuth;
 
 namespace WebAPISample.Controllers
 {
@@ -34,8 +32,7 @@ namespace WebAPISample.Controllers
       public string objectKey { get; set; }
       public string rootFilename { get; set; }
     }
-
-
+    
     [HttpPost]
     [Route("api/forge/modelderivative/translateObject")]
     public async Task<dynamic> TranslateObject([FromBody]TranslateObjectModel objModel)
@@ -53,8 +50,8 @@ namespace WebAPISample.Controllers
          })
       };
       JobPayload job;
-      if (string.IsNullOrEmpty( objModel.rootFilename))
-         job = new JobPayload(new JobPayloadInput(objModel.objectKey), new JobPayloadOutput(outputs));
+      if (string.IsNullOrEmpty(objModel.rootFilename))
+        job = new JobPayload(new JobPayloadInput(objModel.objectKey), new JobPayloadOutput(outputs));
       else
         job = new JobPayload(new JobPayloadInput(objModel.objectKey, true, objModel.rootFilename), new JobPayloadOutput(outputs));
 
