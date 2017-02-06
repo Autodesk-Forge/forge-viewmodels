@@ -45,8 +45,7 @@ namespace WebAPISample
     {
       // Web API configuration and services
       config.Formatters.Add(new BrowserJsonFormatter()); // JSON by default
-
-      
+            
       // Web API routes
       config.MapHttpAttributeRoutes();
 
