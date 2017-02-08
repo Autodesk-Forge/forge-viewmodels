@@ -12,7 +12,7 @@
 
 # Description
 
-This basic C# WebAPI back-end sample implements a basic list of Buckets and Objects with an [Autodesk Forge 2 Legged OAuth](https://developer.autodesk.com/en/docs/oauth/v2/tutorials/get-2-legged-token/). The front-end was desiged with pure HTML + JavaScript (jQuery, Bootstrap), no ASPx features. It should look like:
+This basic C# WebAPI back-end sample implements a basic list of Buckets and Objects with an [Autodesk Forge 2 Legged OAuth](https://developer.autodesk.com/en/docs/oauth/v2/tutorials/get-2-legged-token/). The front-end was desiged with pure HTML + JavaScript (jQuery, Bootstrap), no ASPx features (i.e. no WebForms or MVC on this sample). It should look like:
 
 ![](indexpage.png)
 
@@ -41,7 +41,7 @@ Open the **web.config** file and adjust the Forge Client ID & Secret. If you pla
 
 Compile the solution, Visual Studio should download the NUGET packages ([Autodesk Forge](https://www.nuget.org/packages/Autodesk.Forge/), [RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/))
 
-Start the **ASPNET.webapi** project, the **index.html** is marked as start page. At the webpage, the **New Bucket** blue button allow create new buckets (as of now, minimum input validation is implemented). For any bucket, right-click to upload a file (objects). For demonstration, objects are not automatically translated, but right-click on a object and select **Translate**. 
+Start the **ASPNET.webapi** project, the **index.html** is marked as start page. At the webpage, the **New Bucket** blue button allow create new buckets (as of now, minimum input validation is implemented). For any bucket, right-click to upload a file (objects). For demonstration, objects **are not** automatically translated, but right-click on a object and select **Translate**. If is a .ZIP file, it will request to type the root file.
 
 # Deployment
 
@@ -58,5 +58,4 @@ Please see the [LICENSE](LICENSE) file for full details.
 
 ## Written by
 
-Augusto Goncalves (Forge Partner Development)<br />
-http://forge.autodesk.com<br />
+Augusto Goncalves [@augustomaia](https://twitter.com/augustomaia), [Forge Partner Development](http://forge.autodesk.com)
