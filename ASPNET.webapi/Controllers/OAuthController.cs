@@ -30,7 +30,7 @@ namespace WebAPISample.Controllers
     {
       // only expose data:read access tokens as endpoints
       // this is required for Viewer
-      dynamic oauth = await Utility.OAuth.Get2LeggedTokenAsync(new Scope[] { Scope.DataRead });
+      dynamic oauth = await Utility.OAuth.Get2LeggedTokenAsync(new Scope[] { Scope.ViewablesRead });
       return oauth.access_token;
     }
   }
