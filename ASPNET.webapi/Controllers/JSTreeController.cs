@@ -56,7 +56,7 @@ namespace WebAPISample.Controllers
         // in this case, let's return all buckets
         BucketsApi appBckets = new BucketsApi();
         appBckets.Configuration.AccessToken = oauth.access_token;
-        dynamic buckets = await appBckets.GetBucketsAsync(Enum.GetName(typeof(Utility.Buckets.Region), Utility.Buckets.Region.US));
+        dynamic buckets = await appBckets.GetBucketsAsync(Enum.GetName(typeof(Utility.Buckets.Region), Utility.Buckets.Region.US), 100);
         foreach (KeyValuePair<string, dynamic> bucket in new DynamicDictionaryItems(buckets.items))
         {
           nodes.Add(new TreeNode(bucket.Value.bucketKey, bucket.Value.bucketKey, "bucket", true));
