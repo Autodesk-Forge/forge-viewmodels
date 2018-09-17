@@ -15,7 +15,7 @@
 
 This basic C# WebAPI back-end sample implements a basic list of Buckets and Objects with an [Autodesk Forge 2 Legged OAuth](https://developer.autodesk.com/en/docs/oauth/v2/tutorials/get-2-legged-token/). The front-end was desiged with pure HTML + JavaScript (jQuery, Bootstrap), no ASPx features (i.e. no WebForms or MVC on this sample). It should look like:
 
-![thumbnail](indexpage.png)
+![thumbnail](/thumbnail.png)
 
  The Visual Studio solution includes 1 project: 
 
