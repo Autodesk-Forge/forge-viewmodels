@@ -1,3 +1,21 @@
+/////////////////////////////////////////////////////////////////////
+// Copyright (c) Autodesk, Inc. All rights reserved
+// Written by Forge Partner Development
+//
+// Permission to use, copy, modify, and distribute this software in
+// object code form for any purpose and without fee is hereby granted,
+// provided that the above copyright notice appears in all copies and
+// that both that copyright notice and the limited warranty and
+// restricted rights notice below appear in all supporting
+// documentation.
+//
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS.
+// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC.
+// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+// UNINTERRUPTED OR ERROR FREE.
+/////////////////////////////////////////////////////////////////////
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +27,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using static Autodesk.Forge.Model.PostBucketsPayload;
 
 namespace forgeSample.Controllers
 {
@@ -83,22 +102,45 @@ namespace forgeSample.Controllers
         /// </summary>
         [HttpPost]
         [Route("api/forge/oss/buckets")]
-        public async Task<dynamic> CreateBucket([FromBody]CreateBucketModel bucket)
+        public async Task<dynamic> CreateBucketAsync([FromBody]BucketModel bucket)
         {
             BucketsApi buckets = new BucketsApi();
             dynamic token = await OAuthController.GetInternalAsync();
             buckets.Configuration.AccessToken = token.access_token;
-            PostBucketsPayload bucketPayload = new PostBucketsPayload(bucket.bucketKey, null,
-              PostBucketsPayload.PolicyKeyEnum.Transient);
+            PostBucketsPayload bucketPayload = new PostBucketsPayload(bucket.bucketKey, null, bucket.policyKey);
             return await buckets.CreateBucketAsync(bucketPayload, "US");
         }
 
         /// <summary>
         /// Input model for CreateBucket method
         /// </summary>
-        public class CreateBucketModel
+        public class BucketModel
         {
             public string bucketKey { get; set; }
+            public PolicyKeyEnum policyKey { get; set; }
+        }
+
+        [HttpDelete]
+        [Route("api/forge/oss/buckets")]
+        public async Task<IActionResult> DeleteBucketAsync([FromBody]BucketModel bucket)
+        {
+            BucketsApi buckets = new BucketsApi();
+            dynamic token = await OAuthController.GetInternalAsync();
+            buckets.Configuration.AccessToken = token.access_token;
+            await buckets.DeleteBucketAsync(bucket.bucketKey);
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("api/forge/oss/objects")]
+        public async Task<IActionResult> DeleteObjectAsync([FromBody]ObjectModel objectModel)
+        {
+            ObjectsApi objects = new ObjectsApi();
+            dynamic token = await OAuthController.GetInternalAsync();
+            objects.Configuration.AccessToken = token.access_token;
+            string objectName = Base64Decode(objectModel.objectName).Split("/")[1];
+            await objects.DeleteObjectAsync(objectModel.bucketKey, objectName);
+            return Ok();
         }
 
         /// <summary>
@@ -146,47 +188,6 @@ namespace forgeSample.Controllers
             // Other properties
         }
 
-        public class FormDataJsonBinder : Microsoft.AspNetCore.Mvc.ModelBinding.IModelBinder
-        {
-            public Task BindModelAsync(Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingContext bindingContext)
-            {
-                if (bindingContext == null)
-                {
-                    throw new ArgumentNullException(nameof(bindingContext));
-                }
-
-                string fieldName = bindingContext.FieldName;
-                var valueProviderResult = bindingContext.ValueProvider.GetValue(fieldName);
-
-                if (valueProviderResult == Microsoft.AspNetCore.Mvc.ModelBinding.ValueProviderResult.None)
-                {
-                    return Task.CompletedTask;
-                }
-                else
-                {
-                    bindingContext.ModelState.SetModelValue(fieldName, valueProviderResult);
-                }
-
-                string value = valueProviderResult.FirstValue;
-                if (string.IsNullOrEmpty(value))
-                {
-                    return Task.CompletedTask;
-                }
-
-                try
-                {
-                    object result = JsonConvert.DeserializeObject(value, bindingContext.ModelType);
-                    bindingContext.Result = Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingResult.Success(result);
-                }
-                catch (JsonException)
-                {
-                    bindingContext.Result = Microsoft.AspNetCore.Mvc.ModelBinding.ModelBindingResult.Failed();
-                }
-
-                return Task.CompletedTask;
-            }
-        }
-
         /// <summary>
         /// Base64 enconde a string
         /// </summary>
@@ -194,6 +195,11 @@ namespace forgeSample.Controllers
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(string encodedText)
+        {
+            return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(encodedText));
         }
     }
 }

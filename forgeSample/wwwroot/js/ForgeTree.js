@@ -1,4 +1,22 @@
-﻿$(document).ready(function () {
+﻿/////////////////////////////////////////////////////////////////////
+// Copyright (c) Autodesk, Inc. All rights reserved
+// Written by Forge Partner Development
+//
+// Permission to use, copy, modify, and distribute this software in
+// object code form for any purpose and without fee is hereby granted,
+// provided that the above copyright notice appears in all copies and
+// that both that copyright notice and the limited warranty and
+// restricted rights notice below appear in all supporting
+// documentation.
+//
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS.
+// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC.
+// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+// UNINTERRUPTED OR ERROR FREE.
+/////////////////////////////////////////////////////////////////////
+
+$(document).ready(function () {
   prepareAppBucketTree();
   $('#refreshBuckets').click(function () {
     $('#appBuckets').jstree(true).refresh();
@@ -41,7 +59,7 @@
 
 function createNewBucket() {
   var bucketKey = $('#newBucketKey').val();
-  var policyKey = $('#newBucketPolicyKey').val();
+  var policyKey = $('#newBucketPolicyKey').val()[0];
   jQuery.post({
     url: '/api/forge/oss/buckets',
     contentType: 'application/json',
@@ -53,7 +71,6 @@ function createNewBucket() {
     error: function (err) {
       if (err.status == 409)
         alert('Bucket already exists - 409: Duplicated')
-      console.log(err);
     }
   });
 }
@@ -125,6 +142,13 @@ function autodeskCustomMenu(autodeskNode) {
             uploadFile();
           },
           icon: 'glyphicon glyphicon-cloud-upload'
+        },
+        deleteBucket: {
+          label: "Delete bucket",
+          action: function () {
+            deleteBucket();
+          },
+          icon: 'glyphicon glyphicon-trash'
         }
       };
       break;
@@ -137,6 +161,13 @@ function autodeskCustomMenu(autodeskNode) {
             translateObject(treeNode);
           },
           icon: 'glyphicon glyphicon-eye-open'
+        },
+        deleteBucket: {
+          label: "Delete object",
+          action: function () {
+            deleteObject();
+          },
+          icon: 'glyphicon glyphicon-trash'
         }
       };
       break;
@@ -149,17 +180,67 @@ function uploadFile() {
   $('#hiddenUploadField').click();
 }
 
-function translateObject(node) {
-  $("#forgeViewer").empty();
-  if (node == null) node = $('#appBuckets').jstree(true).get_selected(true)[0];
+function deleteBucket() {
+  var node = $('#appBuckets').jstree(true).get_selected(true)[0];
+  if (node == undefined) return;
+  if (node.type != 'bucket') return;
+  jQuery.ajax({
+    url: '/api/forge/oss/buckets',
+    type: 'DELETE',
+    contentType: 'application/json',
+    data: JSON.stringify({ 'bucketKey': node.id }),
+    success: function (res) {
+      $('#appBuckets').jstree(true).refresh();
+    },
+  });
+}
+
+function deleteObject() {
+  var node = $('#appBuckets').jstree(true).get_selected(true)[0];
+  if (node == undefined) return;
+  if (node.type != 'object') return;
   var bucketKey = node.parents[0];
   var objectKey = node.id;
-  jQuery.post({
-    url: '/api/forge/modelderivative/jobs',
+  jQuery.ajax({
+    url: '/api/forge/oss/objects',
+    type: 'DELETE',
     contentType: 'application/json',
     data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey }),
     success: function (res) {
-      $("#forgeViewer").html('Translation started! Please try again in a moment.');
+      $('#appBuckets').jstree(true).refresh();
     },
   });
+}
+
+function translateObject(node) {
+  $("#forgeViewer").empty();
+
+  if (node == null) node = $('#appBuckets').jstree(true).get_selected(true)[0];
+  var bucketKey = node.parents[0];
+  var objectKey = node.id;
+
+  if (node.text.indexOf('.zip') > 0) {
+    $("#rootFileModal").modal();
+    $("#translateZipObject").click(function () {
+      $('#rootFileModal').modal('toggle');
+      jQuery.post({
+        url: '/api/forge/modelderivative/jobs',
+        contentType: 'application/json',
+        data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'rootFilename': $("#rootFilename").val() }),
+        success: function (res) {
+          $("#forgeViewer").html('Translation started! Please try again in a moment.');
+        },
+      });
+    });
+  }
+  else {
+    jQuery.post({
+      url: '/api/forge/modelderivative/jobs',
+      contentType: 'application/json',
+      data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey }),
+      success: function (res) {
+        $("#forgeViewer").html('Translation started! Please try again in a moment.');
+      },
+    });
+  }
 }
