@@ -1,61 +1,87 @@
-# model.derivative-csharp.webapi-viewer.sample
+# model.derivative-csharp.webapi-sample
 
-![Platforms](https://img.shields.io/badge/platform-Windows-lightgray.svg)
-![.NET](https://img.shields.io/badge/.NET-4.5.2-blue.svg)
-[![ASP.NET](https://img.shields.io/badge/ASP.NET-4.5.2-blue.svg)](https://asp.net/)
-[![License](http://img.shields.io/:license-mit-blue.svg)](http://opensource.org/licenses/MIT)
+![Platforms](https://img.shields.io/badge/platform-Windows|MacOS-lightgray.svg)
+![.NET](https://img.shields.io/badge/.NET%20Core-2.1-blue.svg)
+[![License](http://img.shields.io/:license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 [![oAuth2](https://img.shields.io/badge/oAuth2-v1-green.svg)](http://developer.autodesk.com/)
-[![Data-Management](https://img.shields.io/badge/Data%20Management-v1-green.svg)](http://developer.autodesk.com/)
 [![OSS](https://img.shields.io/badge/OSS-v2-green.svg)](http://developer.autodesk.com/)
 [![Model-Derivative](https://img.shields.io/badge/Model%20Derivative-v2-green.svg)](http://developer.autodesk.com/)
-[![Viewer](https://img.shields.io/badge/Viewer-v3.3-green.svg)](http://developer.autodesk.com/)
+[![Viewer](https://img.shields.io/badge/Viewer-v6-green.svg)](http://developer.autodesk.com/)
+
+![Intermediate](https://img.shields.io/badge/Level-Intermediate-blue.svg)
 
 # Description
 
-This basic C# WebAPI back-end sample implements a basic list of Buckets and Objects with an [Autodesk Forge 2 Legged OAuth](https://developer.autodesk.com/en/docs/oauth/v2/tutorials/get-2-legged-token/). The front-end was desiged with pure HTML + JavaScript (jQuery, Bootstrap), no ASPx features (i.e. no WebForms or MVC on this sample). It should look like:
+This basic C# WebAPI back-end sample implements a basic list of Buckets and Objects with an [Autodesk Forge 2 Legged OAuth](https://developer.autodesk.com/en/docs/oauth/v2/tutorials/get-2-legged-token/). The front-end was desiged with pure HTML + JavaScript (jQuery, Bootstrap), no ASPx features (i.e. no WebForms or MVC on this sample). It includes: create and delete buckets, upload and delete object, translate (including `.zip` files). This code is based on [this tutorial](http://learnforge.autodesk.io).
+
+## Thumbnail
 
 ![thumbnail](/thumbnail.png)
 
- The Visual Studio solution includes 1 project: 
-
-**1. ASPNET.Webapi**: WebAPI backend that expose specific endpoints to the fron-end (pude HTML + JavaScript) via Controllers.
-
-### Live demo
-
-Try it live at [modelderivative.apphb.com](http://modelderivative.apphb.com/) (hosted by [AppHarbor](https://appharbor.com/)). **Important**: this sample is public, therefore any file uploaded will be visible to others. 
-
 # Setup
 
-For using this sample, you need an Autodesk developer credentials. Visit the [Forge Developer Portal](https://developer.autodesk.com), sign up for an account, then [create an app](https://developer.autodesk.com/myapps/create) that uses Data Management and Model Derivative APIs. For this new app, use **http://localhost:3000/api/forge/callback/oauth** as Callback URL, although is not used on 2-legged flow. Finally take note of the **Client ID** and **Client Secret**.
+## Prerequisites
 
-## Run Locally
+1. **Forge Account**: Learn how to create a Forge Account, activate subscription and create an app at [this tutorial](http://learnforge.autodesk.io/#/account/). 
+2. **Visual Studio**: Either Community (Windows) or Code (Windows, MacOS).
+3. **.NET Core** basic knowledge with C#
+4. **JavaScript** basic knowledge with **jQuery**
 
-Open the **web.config** file and adjust the Forge Client ID & Secret. If you plan to deploy to Appharbor, configure the variables (no need to change this web.config file).
+## Running locally
 
-```xml
-<appSettings>
-  <add key="FORGE_CLIENT_ID" value="" />
-  <add key="FORGE_CLIENT_SECRET" value="" />
-</appSettings>
+Clone this project or download it (this `netcore` branch only). It's recommended to install [GitHub desktop](https://desktop.github.com/). To clone it via command line, use the following (**Terminal** on MacOSX/Linux, **Git Shell** on Windows):
+
+    git clone github.com/Autodesk-Forge/model.derivative-WebAPI-sample.git
+
+**Visual Studio** (Windows):
+
+Right-click on the project, then go to **Debug**. Adjust the settings as shown below. 
+
+![](forgeSample/wwwroot/img/readme/visual_studio_settings.png)
+
+**Visual Sutdio Code** (Windows, MacOS):
+
+Open the folder, at the bottom-right, select **Yes** and **Restore**. This restores the packages (e.g. Autodesk.Forge) and creates the launch.json file. See *Tips & Tricks* for .NET Core on MacOS.
+
+![](forgeSample/wwwroot/img/readme/visual_code_restore.png)
+
+At the `.vscode\launch.json`, find the env vars and add your Forge Client ID, Secret and callback URL. Also define the `ASPNETCORE_URLS` variable. The end result should be as shown below:
+
+```json
+"env": {
+    "ASPNETCORE_ENVIRONMENT": "Development",
+    "ASPNETCORE_URLS" : "http://localhost:3000",
+    "FORGE_CLIENT_ID": "your id here",
+    "FORGE_CLIENT_SECRET": "your secret here"
+},
 ```
 
-Compile the solution, Visual Studio should download the NUGET packages ([Autodesk Forge](https://www.nuget.org/packages/Autodesk.Forge/), [RestSharp](https://www.nuget.org/packages/RestSharp) and [Newtonsoft.Json](https://www.nuget.org/packages/newtonsoft.json/))
+## Deployment
 
-Start the **ASPNET.webapi** project, the **index.html** is marked as start page. At the webpage, the **New Bucket** blue button allow create new buckets (as of now, minimum input validation is implemented). For any bucket, right-click to upload a file (objects). For demonstration, objects **are not** automatically translated, but right-click on a object and select **Translate**. If is a .ZIP file, it will request to type the root file.
+To deploy this application to Heroku. After clicking on the button below, at the Heroku Create New App page, set your Client ID and Secret for Forge.
 
-# Deployment
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
-For Appharbor deployment, following [this steps to configure your Forge Client ID & Secret](http://adndevblog.typepad.com/cloud_and_mobile/2017/01/deploying-forge-aspnet-samples-to-appharbor.html).
+# Further Reading
 
-# Known issues
+Documentation:
 
-The **ASPNET.webapi** project is adding reference to Newtonsoft.Json library due a dependency from another library (jsTree), but this is not required and cause a conflict of versions. If it happens, you can safely remove this reference (from ASPNET.webapi project).
+- [Data Management API](https://developer.autodesk.com/en/docs/data/v2/overview/)
+- [Model Derivative API](https://forge.autodesk.com/en/docs/model-derivative/v2/developers_guide/overview/)
+- [Viewer](https://developer.autodesk.com/en/docs/viewer/v6)
 
-# License
+### Tips & Tricks
 
-This sample is licensed under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-Please see the [LICENSE](LICENSE) file for full details.
+This sample uses .NET Core and works fine on both Windows and MacOS, see [this tutorial for MacOS](https://github.com/augustogoncalves/dotnetcoreheroku).
+
+### Troubleshooting
+
+1. **error setting certificate verify locations** error: may happen on Windows, use the following: `git config --global http.sslverify "false"`
+
+## License
+
+This sample is licensed under the terms of the [MIT License](http://opensource.org/licenses/MIT). Please see the [LICENSE](LICENSE) file for full details.
 
 ## Written by
 
