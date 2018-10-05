@@ -162,6 +162,13 @@ function autodeskCustomMenu(autodeskNode) {
           },
           icon: 'glyphicon glyphicon-eye-open'
         },
+        deleteManifest: {
+          label: "Delete manifest (viewables)",
+          action: function () {
+            deleteManifest();
+          },
+          icon: 'glyphicon glyphicon-trash'
+        },
         deleteBucket: {
           label: "Delete object",
           action: function () {
@@ -191,6 +198,20 @@ function deleteBucket() {
     data: JSON.stringify({ 'bucketKey': node.id }),
     success: function (res) {
       $('#appBuckets').jstree(true).refresh();
+    },
+  });
+}
+
+function deleteManifest() {
+  var node = $('#appBuckets').jstree(true).get_selected(true)[0];
+  if (node == undefined) return;
+  if (node.type != 'object') return;
+  jQuery.ajax({
+    url: '/api/forge/modelderivative/manifest',
+    type: 'DELETE',
+    contentType: 'application/json',
+    data: JSON.stringify({ 'objectName': node.id }),
+    success: function (res) {
     },
   });
 }

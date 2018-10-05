@@ -65,7 +65,16 @@ namespace forgeSample.Controllers
             return jobPosted;
         }
 
-
+        [HttpDelete]
+        [Route("api/forge/modelderivative/manifest")]
+        public async Task<IActionResult> DeleteObjectAsync([FromBody]ObjectModel objectModel)
+        {
+            dynamic token = await OAuthController.GetInternalAsync();
+            DerivativesApi derivative = new DerivativesApi();
+            derivative.Configuration.AccessToken = token.access_token;
+            await derivative.DeleteManifestAsync(objectModel.objectName);
+            return Ok();
+        }
     }
 
     public class ObjectModel

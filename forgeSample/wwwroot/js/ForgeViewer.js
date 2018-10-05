@@ -19,6 +19,16 @@
 var viewerApp;
 
 function launchViewer(urn) {
+  if (viewerApp != null) {
+    var thisviewer = viewerApp.getCurrentViewer();
+    if (thisviewer) {
+      thisviewer.tearDown()
+      thisviewer.finish()
+      thisviewer = null
+      $("#forgeViewer").empty();
+    }
+  }
+
   var options = {
     env: 'AutodeskProduction',
     getAccessToken: getForgeToken
