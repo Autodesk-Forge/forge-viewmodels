@@ -24,7 +24,7 @@ This basic C# WebAPI back-end sample implements a basic list of Buckets and Obje
 ## Prerequisites
 
 1. **Forge Account**: Learn how to create a Forge Account, activate subscription and create an app at [this tutorial](http://learnforge.autodesk.io/#/account/). 
-2. **Visual Studio**: Either Community (Windows) or Code (Windows, MacOS).
+2. **Visual Studio**: Either Community 2017+ (Windows) or Code (Windows, MacOS).
 3. **.NET Core** basic knowledge with C#
 4. **JavaScript** basic knowledge with **jQuery**
 
@@ -78,6 +78,8 @@ This sample uses .NET Core and works fine on both Windows and MacOS, see [this t
 ### Troubleshooting
 
 1. **error setting certificate verify locations** error: may happen on Windows, use the following: `git config --global http.sslverify "false"`
+
+2. **Using Visual Studio 2015 (or older)**: unfortunately this version is not supported.
 
 ## License
 
