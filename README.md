@@ -27,6 +27,7 @@ This basic C# WebAPI back-end sample implements a basic list of Buckets and Obje
 2. **Visual Studio**: Either Community 2017+ (Windows) or Code (Windows, MacOS).
 3. **.NET Core** basic knowledge with C#
 4. **JavaScript** basic knowledge with **jQuery**
+5. **ngrok**: Routing tool, [download here](https://ngrok.com/)
 
 ## Running locally
 
@@ -53,9 +54,12 @@ At the `.vscode\launch.json`, find the env vars and add your Forge Client ID, Se
     "ASPNETCORE_ENVIRONMENT": "Development",
     "ASPNETCORE_URLS" : "http://localhost:3000",
     "FORGE_CLIENT_ID": "your id here",
-    "FORGE_CLIENT_SECRET": "your secret here"
+    "FORGE_CLIENT_SECRET": "your secret here",
+    "FORGE_WEBHOOK_CALLBACK_HOST": "your ngrok address here: e.g. http://abcd1234.ngrok.io",
 },
 ```
+
+Run `ngrok http 3000` to create a tunnel to your local machine, then copy the address into the `FORGE_WEBHOOK_CALLBACK_HOST` environment variable.
 
 ## Deployment
 

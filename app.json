@@ -13,6 +13,10 @@
         },
         "FORGE_CLIENT_SECRET": {
             "description": "Forge Client Secret"
+        },
+        "FORGE_WEBHOOK_CALLBACK_HOST": {
+            "value": "http://<<YOUR HEROKU APP NAME HERE>>.herokuapp.com",
+            "description": "Host address for Derivative Webhook callback"
         }
     },
     "website": "https://developer.autodesk.com/",
