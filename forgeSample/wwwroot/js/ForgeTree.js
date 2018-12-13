@@ -247,7 +247,7 @@ function translateObject(node) {
       jQuery.post({
         url: '/api/forge/modelderivative/jobs',
         contentType: 'application/json',
-        data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'rootFilename': $("#rootFilename").val() }),
+        data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'rootFilename': $("#rootFilename").val(), 'connectionId': connectionId }),
         success: function (res) {
           $("#forgeViewer").html('Translation started! Please try again in a moment.');
         },
@@ -258,9 +258,9 @@ function translateObject(node) {
     jQuery.post({
       url: '/api/forge/modelderivative/jobs',
       contentType: 'application/json',
-      data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey }),
+      data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'connectionId': connectionId }),
       success: function (res) {
-        $("#forgeViewer").html('Translation started! Please try again in a moment.');
+        $("#forgeViewer").html('Translation started! Model will load when ready...');
       },
     });
   }

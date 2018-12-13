@@ -75,3 +75,27 @@ function getForgeToken(callback) {
     }
   });
 }
+
+var connection;
+var connectionId;
+
+$(document).ready(function () {
+  startConnection();
+});
+
+function startConnection(onReady) {
+  if (connection && connection.connectionState) { if (onReady) onReady(); return; }
+  connection = new signalR.HubConnectionBuilder().withUrl("/api/signalr/modelderivative").build();
+  connection.start()
+    .then(function () {
+      connection.invoke('getConnectionId')
+        .then(function (id) {
+          connectionId = id; // we'll need this...
+          if (onReady) onReady();
+        });
+    });
+
+  connection.on("extractionFinished", function (data) {
+    launchViewer(data.resourceUrn);
+  });
+}
