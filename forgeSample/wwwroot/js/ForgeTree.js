@@ -228,7 +228,7 @@ function deleteObject() {
     contentType: 'application/json',
     data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey }),
     success: function (res) {
-      $('#appBuckets').jstree(true).refresh();
+      $('#appBuckets').jstree(true).refresh_node(node.parent);
     },
   });
 }
@@ -240,28 +240,30 @@ function translateObject(node) {
   var bucketKey = node.parents[0];
   var objectKey = node.id;
 
-  if (node.text.indexOf('.zip') > 0) {
-    $("#rootFileModal").modal();
-    $("#translateZipObject").click(function () {
-      $('#rootFileModal').modal('toggle');
+  startConnection(function () {
+    if (node.text.indexOf('.zip') > 0) {
+      $("#rootFileModal").modal();
+      $("#translateZipObject").click(function () {
+        $('#rootFileModal').modal('toggle');
+        jQuery.post({
+          url: '/api/forge/modelderivative/jobs',
+          contentType: 'application/json',
+          data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'rootFilename': $("#rootFilename").val(), 'connectionId': connectionId }),
+          success: function (res) {
+            $("#forgeViewer").html('Translation started! Please try again in a moment.');
+          },
+        });
+      });
+    }
+    else {
       jQuery.post({
         url: '/api/forge/modelderivative/jobs',
         contentType: 'application/json',
-        data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'rootFilename': $("#rootFilename").val(), 'connectionId': connectionId }),
+        data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'connectionId': connectionId }),
         success: function (res) {
-          $("#forgeViewer").html('Translation started! Please try again in a moment.');
+          $("#forgeViewer").html('Translation started! Model will load when ready...');
         },
       });
-    });
-  }
-  else {
-    jQuery.post({
-      url: '/api/forge/modelderivative/jobs',
-      contentType: 'application/json',
-      data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey, 'connectionId': connectionId }),
-      success: function (res) {
-        $("#forgeViewer").html('Translation started! Model will load when ready...');
-      },
-    });
-  }
+    }
+  })
 }

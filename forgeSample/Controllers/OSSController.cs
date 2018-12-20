@@ -68,7 +68,7 @@ namespace forgeSample.Controllers
                 // as we have the id (bucketKey), let's return all 
                 ObjectsApi objects = new ObjectsApi();
                 objects.Configuration.AccessToken = oauth.access_token;
-                var objectsList = objects.GetObjects(id);
+                var objectsList = objects.GetObjects(id, 100);
                 foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
                 {
                     nodes.Add(new TreeNode(Base64Encode((string)objInfo.Value.objectId),
@@ -139,7 +139,7 @@ namespace forgeSample.Controllers
             dynamic token = await OAuthController.GetInternalAsync();
             objects.Configuration.AccessToken = token.access_token;
             string objectName = Base64Decode(objectModel.objectName).Split("/")[1];
-            await objects.DeleteObjectAsync(objectModel.bucketKey, objectName);
+            await objects.DeleteObjectAsync(objectModel.bucketKey, System.Web.HttpUtility.UrlDecode( objectName));
             return Ok();
         }
 

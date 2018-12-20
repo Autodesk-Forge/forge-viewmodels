@@ -79,10 +79,6 @@ function getForgeToken(callback) {
 var connection;
 var connectionId;
 
-$(document).ready(function () {
-  startConnection();
-});
-
 function startConnection(onReady) {
   if (connection && connection.connectionState) { if (onReady) onReady(); return; }
   connection = new signalR.HubConnectionBuilder().withUrl("/api/signalr/modelderivative").build();
