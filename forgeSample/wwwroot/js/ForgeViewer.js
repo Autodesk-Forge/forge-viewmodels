@@ -16,82 +16,55 @@
 // UNINTERRUPTED OR ERROR FREE.
 /////////////////////////////////////////////////////////////////////
 
-var viewerApp;
+$(document).ready(function () {
+  var urn = getParameterByName('urn');
+  if (urn !== null && urn !== '')
+    launchViewer(urn);
+});
+
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, '\\$&');
+  var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+// From learnforge.autodesk.io (View Models)
+
+var viewer;
 
 function launchViewer(urn) {
-  if (viewerApp != null) {
-    var thisviewer = viewerApp.getCurrentViewer();
-    if (thisviewer) {
-      thisviewer.tearDown()
-      thisviewer.finish()
-      thisviewer = null
-      $("#forgeViewer").empty();
-    }
-  }
-
   var options = {
     env: 'AutodeskProduction',
-    getAccessToken: getForgeToken
+    getAccessToken: getForgeToken,
   };
-  var documentId = 'urn:' + urn;
-  Autodesk.Viewing.Initializer(options, function onInitialized() {
-    viewerApp = new Autodesk.Viewing.ViewingApplication('forgeViewer');
-    viewerApp.registerViewer(viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D, { extensions: ['CustomPropertyPanelExtension', 'Autodesk.DocumentBrowser'] });
-    viewerApp.loadDocument(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+
+  Autodesk.Viewing.Initializer(options, () => {
+    viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: ['CustomPropertyPanelExtension', 'Autodesk.DocumentBrowser'] });
+    viewer.start();
+    var documentId = 'urn:' + urn;
+    Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
   });
 }
 
 function onDocumentLoadSuccess(doc) {
-  // We could still make use of Document.getSubItemsWithProperties()
-  // However, when using a ViewingApplication, we have access to the **bubble** attribute,
-  // which references the root node of a graph that wraps each object from the Manifest JSON.
-  var viewables = viewerApp.bubble.search({ 'type': 'geometry' });
-  if (viewables.length === 0) {
-    console.error('Document contains no viewables.');
-    return;
-  }
-
-  // Choose any of the avialble viewables
-  viewerApp.selectItem(viewables[0].data, onItemLoadSuccess, onItemLoadFail);
+  var viewables = doc.getRoot().getDefaultGeometry();
+  viewer.loadDocumentNode(doc, viewables).then(i => {
+    // documented loaded, any action?
+  });
 }
 
 function onDocumentLoadFailure(viewerErrorCode) {
   console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
 }
 
-function onItemLoadSuccess(viewer, item) {
-  // item loaded, any custom action?
-}
-
-function onItemLoadFail(errorCode) {
-  console.error('onItemLoadFail() - errorCode:' + errorCode);
-}
-
 function getForgeToken(callback) {
-  jQuery.ajax({
-    url: '/api/forge/oauth/token',
-    success: function (res) {
-      callback(res.access_token, res.expires_in)
-    }
-  });
-}
-
-var connection;
-var connectionId;
-
-function startConnection(onReady) {
-  if (connection && connection.connectionState) { if (onReady) onReady(); return; }
-  connection = new signalR.HubConnectionBuilder().withUrl("/api/signalr/modelderivative").build();
-  connection.start()
-    .then(function () {
-      connection.invoke('getConnectionId')
-        .then(function (id) {
-          connectionId = id; // we'll need this...
-          if (onReady) onReady();
-        });
+  fetch('/api/forge/oauth/token').then(res => {
+    res.json().then(data => {
+      callback(data.access_token, data.expires_in);
     });
-
-  connection.on("extractionFinished", function (data) {
-    launchViewer(data.resourceUrn);
   });
 }
