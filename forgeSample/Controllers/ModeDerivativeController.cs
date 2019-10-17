@@ -51,7 +51,7 @@ namespace forgeSample.Controllers
             dynamic existingHooks = await webhook.GetHooksAsync(DerivativeWebhookEvent.ExtractionFinished);
 
             // get the callback from your settings (e.g. web.config)
-            string callbackUlr = OAuthController.GetAppSetting("FORGE_WEBHOOK_CALLBACK_HOST") + "/api/forge/callback/modelderivative";
+            string callbackUlr = OAuthController.GetAppSetting("FORGE_WEBHOOK_URL") + "/api/forge/callback/modelderivative";
 
             bool createHook = true; // need to create, we don't know if our hook is already there...
             foreach (KeyValuePair<string, dynamic> hook in new DynamicDictionaryItems(existingHooks.data))

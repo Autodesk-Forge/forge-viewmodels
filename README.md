@@ -55,11 +55,11 @@ At the `.vscode\launch.json`, find the env vars and add your Forge Client ID, Se
     "ASPNETCORE_URLS" : "http://localhost:3000",
     "FORGE_CLIENT_ID": "your id here",
     "FORGE_CLIENT_SECRET": "your secret here",
-    "FORGE_WEBHOOK_CALLBACK_HOST": "your ngrok address here: e.g. http://abcd1234.ngrok.io",
+    "FORGE_WEBHOOK_URL": "your ngrok address here: e.g. http://abcd1234.ngrok.io",
 },
 ```
 
-Run `ngrok http 3000` to create a tunnel to your local machine, then copy the address into the `FORGE_WEBHOOK_CALLBACK_HOST` environment variable.
+Run `ngrok http 3000` to create a tunnel to your local machine, then copy the address into the `FORGE_WEBHOOK_URL` environment variable.
 
 ## Deployment
 
