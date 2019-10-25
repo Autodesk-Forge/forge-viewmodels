@@ -27,6 +27,7 @@ namespace forgeSample
                 app.UseHsts();
             }
 
+            app.UseRouting();
             app.UseEndpoints(routes =>
             {
                 routes.MapHub<Controllers.ModelDerivativeHub>("/api/signalr/modelderivative");
