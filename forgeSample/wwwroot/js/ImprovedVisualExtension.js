@@ -34,9 +34,13 @@ class ImprovedVisualExtension extends Autodesk.Viewing.Extension {
         this._button = new Autodesk.Viewing.UI.Button('ImprovedVisualButton');
         this._button.onClick = (ev) => {
             // Execute an action here
-            this.viewer.setLightPreset(0);
-            //this.viewer.impl.toggleShadows(true);
-            //this.viewer.impl.setShadowLightDirection(new THREE.Vector3(-1, 2, 1));
+
+            //change lights
+            this.viewer.setLightPreset(1);
+            // apply shadows and angle
+            this.viewer.impl.toggleShadows(true);
+            this.viewer.impl.setShadowLightDirection(new THREE.Vector3(-1, 2, 1));
+            // adjust perspective
             this.viewer.impl.renderer().setAOOptions(10, 0.1);
             this.viewer.navigation.toPerspective();
             this.viewer.setFOV(25);
