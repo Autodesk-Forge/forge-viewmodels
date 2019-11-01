@@ -278,6 +278,13 @@ function startConnection(onReady) {
     .then(function () {
       connection.invoke('getConnectionId')
         .then(function (id) {
+          if (id.indexOf('_') !== -1) {
+            console.log('Restarting...');
+            connection.stop(); // need to fix this..
+            connection = null;
+            startConnection();
+            return;
+          }
           connectionId = id; // we'll need this...
           if (onReady) onReady();
         });
