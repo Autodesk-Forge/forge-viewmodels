@@ -1,4 +1,4 @@
-# model.derivative-csharp.webapi-sample
+# View Models (.NET Core C#)
 
 ![Platforms](https://img.shields.io/badge/platform-Windows|MacOS-lightgray.svg)
 ![.NET](https://img.shields.io/badge/.NET%20Core-2.1-blue.svg)
