@@ -273,7 +273,7 @@ var connectionId;
 
 function startConnection(onReady) {
   if (connection && connection.connectionState) { if (onReady) onReady(); return; }
-  connection = new signalR.HubConnectionBuilder().withUrl("/api/signalr/modelderivative").build();
+  connection = new signalR.HubConnectionBuilder().withUrl("/api/signalr/modelderivative").withAutomaticReconnect().build();
   connection.start()
     .then(function () {
       connection.invoke('getConnectionId')
